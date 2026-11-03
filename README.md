@@ -2,8 +2,6 @@
 
 ## Descripción del proyecto
 
-## Descripción del proyecto
-
 El bajo peso al nacer es un indicador relevante para el análisis de la salud materno-infantil. Su estudio permite conocer cómo se presenta esta condición en la población, identificar diferencias entre distintos grupos y observar su evolución a lo largo del tiempo.
 
 En este contexto, el presente proyecto propone analizar los registros de nacidos vivos de Argentina correspondientes al período 2005–2022, con el objetivo de estudiar la distribución del bajo peso al nacer e identificar patrones asociados a características maternas, del nacimiento y de la jurisdicción de residencia.
