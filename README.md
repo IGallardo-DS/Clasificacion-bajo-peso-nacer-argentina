@@ -2,18 +2,28 @@
 
 ## Descripción del proyecto
 
-El bajo peso al nacer es un indicador relevante para el análisis de la salud materno-infantil. Su estudio permite conocer cómo se presenta esta condición en la población, identificar diferencias entre distintos grupos y observar su evolución a lo largo del tiempo.
+El bajo peso al nacer es un indicador relevante para el análisis de las condiciones de salud al nacimiento. Este proyecto aborda la clasificación retrospectiva de registros de nacimientos de Argentina según la condición de bajo peso al nacer, utilizando datos publicados por la Dirección de Estadísticas e Información de Salud (DEIS), correspondientes al período 2005–2022.
 
-En este contexto, el presente proyecto propone analizar los registros de nacidos vivos de Argentina correspondientes al período 2005–2022, con el objetivo de estudiar la distribución del bajo peso al nacer e identificar patrones asociados a características maternas, del nacimiento y de la jurisdicción de residencia.
+A partir de características maternas y del nacimiento, se busca identificar patrones y grupos poblacionales que históricamente presentan distintas proporciones de bajo peso, y evaluar la capacidad de diferentes algoritmos de aprendizaje automático para clasificar los registros según esta condición.
 
-La utilidad de este análisis radica en aportar información que permita comprender mejor cómo se distribuye esta condición en los registros nacionales, reconocer grupos y períodos con distintas proporciones de bajo peso y generar una base de conocimiento que pueda servir como punto de partida para futuros estudios sobre la temática.
+El proyecto también busca analizar si los patrones identificados en períodos anteriores se mantienen en registros de años posteriores, mediante una división temporal de los datos.
 
-Para ello, se desarrolla un proceso de exploración, limpieza y preparación de los datos, seguido de la comparación de distintos modelos de clasificación. Estos modelos buscan distinguir retrospectivamente los registros según la condición de bajo peso al nacer, definida de la siguiente manera:
+## Objetivo general
 
-- `1`: bajo peso al nacer (menos de 2.500 g).
-- `0`: sin bajo peso al nacer (2.500 g o más).
+Analizar y clasificar retrospectivamente los registros de nacimientos de Argentina correspondientes al período 2005–2022 según la condición de bajo peso al nacer, utilizando características maternas y del nacimiento, con el propósito de identificar patrones descriptivos y evaluar el desempeño de distintos modelos de aprendizaje automático en períodos posteriores.
 
-El proyecto utiliza información registrada al momento del nacimiento, por lo que su alcance es retrospectivo. En consecuencia, los resultados permiten analizar y clasificar registros existentes, pero no constituyen una herramienta de predicción prenatal ni de diagnóstico clínico.
+## Definición de la variable objetivo
+
+Se considera bajo peso al nacer cuando el peso registrado es inferior a 2.500 gramos.
+
+- **1 – Bajo peso:** peso al nacer inferior a 2.500 gramos.
+- **0 – Sin bajo peso:** peso al nacer igual o superior a 2.500 gramos.
+
+## Alcance y consideraciones
+
+El análisis tiene un enfoque retrospectivo y utiliza características registradas en el momento del nacimiento. En particular, las semanas de gestación representan la duración de la gestación al momento del nacimiento, por lo que no se plantea una predicción prenatal.
+
+Los resultados permiten identificar asociaciones y patrones presentes en los registros, pero no establecer relaciones causales ni validar una herramienta de diagnóstico o intervención clínica. La información obtenida podrá servir como referencia para futuros estudios epidemiológicos y análisis relacionados con la prevención y la planificación de recursos sanitarios.
 
 ## Fuente de datos
 
