@@ -2,14 +2,20 @@
 
 ## Descripción del proyecto
 
-Este proyecto tiene como objetivo analizar y clasificar retrospectivamente registros de nacimientos de Argentina según la condición de bajo peso al nacer durante el período 2005–2022.
+## Descripción del proyecto
 
-Se considera bajo peso al nacer cuando el peso registrado es inferior a 2.500 gramos. A partir de esta definición se construye una variable objetivo binaria:
+El bajo peso al nacer es un indicador relevante para el análisis de la salud materno-infantil. Su estudio permite conocer cómo se presenta esta condición en la población, identificar diferencias entre distintos grupos y observar su evolución a lo largo del tiempo.
+
+En este contexto, el presente proyecto propone analizar los registros de nacidos vivos de Argentina correspondientes al período 2005–2022, con el objetivo de estudiar la distribución del bajo peso al nacer e identificar patrones asociados a características maternas, del nacimiento y de la jurisdicción de residencia.
+
+La utilidad de este análisis radica en aportar información que permita comprender mejor cómo se distribuye esta condición en los registros nacionales, reconocer grupos y períodos con distintas proporciones de bajo peso y generar una base de conocimiento que pueda servir como punto de partida para futuros estudios sobre la temática.
+
+Para ello, se desarrolla un proceso de exploración, limpieza y preparación de los datos, seguido de la comparación de distintos modelos de clasificación. Estos modelos buscan distinguir retrospectivamente los registros según la condición de bajo peso al nacer, definida de la siguiente manera:
 
 - `1`: bajo peso al nacer (menos de 2.500 g).
 - `0`: sin bajo peso al nacer (2.500 g o más).
 
-El trabajo comprende la exploración de los datos, su limpieza y preparación, y la posterior comparación de modelos de clasificación. El análisis utiliza información registrada al momento del nacimiento, por lo que su alcance es retrospectivo y no corresponde a una herramienta de predicción prenatal.
+El proyecto utiliza información registrada al momento del nacimiento, por lo que su alcance es retrospectivo. En consecuencia, los resultados permiten analizar y clasificar registros existentes, pero no constituyen una herramienta de predicción prenatal ni de diagnóstico clínico.
 
 ## Fuente de datos
 
