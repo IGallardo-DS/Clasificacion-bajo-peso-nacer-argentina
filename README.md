@@ -1,78 +1,143 @@
-# Predicción prenatal de riesgo de bajo peso al nacer en Argentina
+# Clasificación del bajo peso al nacer en Argentina
 
-## 1. Descripción del proyecto
+## Descripción del proyecto
 
-Este proyecto propone desarrollar y evaluar modelos de aprendizaje automático supervisado para estimar el riesgo de bajo peso al nacer en Argentina, utilizando registros de nacimientos correspondientes al período 2005–2022.
+Este proyecto tiene como objetivo analizar y clasificar retrospectivamente registros de nacimientos de Argentina según la condición de bajo peso al nacer durante el período 2005–2022.
 
-Se plantea un problema de clasificación binaria. Se considera **bajo peso al nacer** un peso inferior a 2500 gramos y **sin bajo peso** un peso igual o superior a 2500 gramos.
+Se considera bajo peso al nacer cuando el peso registrado es inferior a 2.500 gramos. A partir de esta definición se construye una variable objetivo binaria:
 
-La propuesta contempla una instancia de evaluación prenatal tardía o de admisión al parto, en la que la edad gestacional ya se encuentre registrada. Por este motivo, el alcance de la predicción se limita a esa instancia y a las variables que estén disponibles en ese momento.
+- `1`: bajo peso al nacer (menos de 2.500 g).
+- `0`: sin bajo peso al nacer (2.500 g o más).
 
-## 2. Formulación de objetivos
+El trabajo comprende la exploración de los datos, su limpieza y preparación, y la posterior comparación de modelos de clasificación. El análisis utiliza información registrada al momento del nacimiento, por lo que su alcance es retrospectivo y no corresponde a una herramienta de predicción prenatal.
 
-### Objetivo general
+## Fuente de datos
 
-Desarrollar y evaluar modelos de aprendizaje automático capaces de estimar el riesgo de bajo peso al nacer en una instancia de evaluación prenatal tardía o de admisión al parto, utilizando las variables disponibles en los registros de nacimientos de Argentina.
+Los datos utilizados provienen de los registros de nacidos vivos publicados por la Dirección de Estadísticas e Información de la Salud (DEIS) de Argentina.
 
-### Objetivos específicos
+- **Fuente:** [Nacidos vivos registrados en la República Argentina entre los años 2005 y 2022](https://datos.gob.ar/)
+- **Período analizado:** 2005–2022.
+- **Formato original:** archivo CSV comprimido en ZIP.
 
-- Examinar la estructura y las características del conjunto de datos.
-- Realizar un análisis exploratorio para conocer la distribución de las variables y de las clases.
-- Preparar los datos para utilizarlos en modelos de clasificación.
-- Construir la variable objetivo `bajo_peso` a partir del umbral de 2500 gramos.
-- Entrenar y comparar modelos de clasificación binaria vistos en clase.
-- Evaluar el desempeño de los modelos mediante métricas que permitan analizar la detección de casos de bajo peso y el equilibrio entre sensibilidad, precisión y falsos positivos.
-- Interpretar y comunicar los resultados teniendo en cuenta las limitaciones del dataset, sin atribuir causalidad a las asociaciones observadas.
+La documentación de las variables se encuentra en el archivo `docs/diccionario_variables.xlsx`.
 
-## 3. Contexto del problema y relevancia
+## Estructura del proyecto
 
-El bajo peso al nacer es una característica relevante para el seguimiento de los nacimientos. Contar con una estimación del riesgo en una instancia tardía de evaluación prenatal o al momento de la admisión al parto podría ayudar a identificar registros con características asociadas al bajo peso y a estudiar patrones presentes en los datos.
+```text
+clasificacion-bajo-peso-nacer-argentina/
+│
+├── data/
+│   ├── raw/          # Datos originales
+│   ├── interim/      # Datos intermedios
+│   └── processed/    # Datos procesados
+│
+├── docs/
+│   ├── diccionario_variables.xlsx
+│   └── entrega_2_descripcion_eda_preprocesamiento.md
+│
+├── notebooks/
+│   ├── 01_eda_preprocesamiento.ipynb
+│   └── 02_modelado.ipynb
+│
+├── models/           # Modelos entrenados
+├── reports/          # Informes y visualizaciones
+│
+└── README.md
+```
 
-El proyecto analizará variables disponibles en el dataset, como la jurisdicción de residencia, el grupo de edad materna, el nivel de instrucción, las semanas de gestación y el sexo. La utilidad de cada variable dependerá de su definición y de que se encuentre disponible en el momento previsto para la estimación.
+## Documentación
 
-## 4. Definición del tipo de problema
+- [Descripción del dataset, análisis exploratorio y preprocesamiento](docs/descripcion_eda_preprocesamiento.md)
+- [Diccionario de variables](docs/diccionario_variables.xlsx)
 
-El proyecto corresponde a un problema de **aprendizaje supervisado de clasificación binaria**. La variable objetivo distingue entre:
+## Preparación de los datos
 
-- **Bajo peso al nacer:** peso inferior a 2500 gramos.
-- **Sin bajo peso:** peso igual o superior a 2500 gramos.
+Durante la preparación se realizaron las siguientes tareas:
 
-La variable `bajo_peso` se construirá a partir de la categoría de peso al nacer. La variable original utilizada para definir la clase no se incorporará entre los predictores, para evitar fuga de información.
+1. Carga e inspección inicial del conjunto de datos.
+2. Exclusión de los registros cuyo peso al nacer figura como `Sin especificar`, ya que no permiten determinar la clase objetivo.
+3. Normalización de las categorías de las variables.
+4. Revisión de valores faltantes y consistencia de los registros.
+5. Creación de la variable objetivo `bajo_peso`.
+6. Exploración de la distribución de la variable objetivo y de su relación con las demás variables.
 
-## 5. Modelos de aprendizaje automático propuestos
+Los registros excluidos por no tener un peso especificado fueron 26.432, que representan 145.857 nacimientos.
 
-Se propone comparar modelos de clasificación estudiados en clase:
+Luego de esta exclusión, el conjunto quedó conformado por 520.531 registros, que representan 12.311.460 nacimientos.
 
-- **Regresión logística:** modelo de referencia para clasificación binaria que estima la probabilidad de pertenecer a una clase.
-- **Árbol de decisión (CART):** utiliza reglas sucesivas para separar los registros y permite inspeccionar las decisiones de clasificación.
-- **Random Forest:** combina múltiples árboles de decisión para obtener una clasificación conjunta.
+La variable `nacimientos_cantidad` indica la cantidad de nacimientos representados por cada registro y se conserva como ponderador para los análisis y las evaluaciones correspondientes. No se utiliza como variable predictora.
 
-La selección final se justificará a partir de las métricas de evaluación y del objetivo de detectar casos de bajo peso manteniendo un equilibrio razonable con la precisión y los falsos positivos.
+## Análisis exploratorio
 
-## 6. Alcance y limitaciones
+El análisis exploratorio contempla la distribución del bajo peso al nacer y su comportamiento según distintas características disponibles en los registros:
 
-La predicción propuesta se sitúa en una instancia de evaluación prenatal tardía o de admisión al parto, cuando la edad gestacional ya se encuentra registrada. No se plantea como una predicción aplicable a cualquier momento del embarazo.
+- Año de nacimiento.
+- Jurisdicción de residencia materna.
+- Grupo de edad de la madre.
+- Nivel de instrucción materna.
+- Tipo de parto (simple o múltiple).
+- Semanas de gestación.
+- Sexo del nacido vivo.
 
-El dataset utilizado contiene registros agregados y no necesariamente una fila por cada nacimiento individual. Por eso, los resultados deberán interpretarse considerando la unidad de observación y el uso de `nacimientos_cantidad` como ponderador. El desempeño obtenido sobre estos datos no constituye por sí solo una validación clínica de predicciones individuales.
+Los resultados se analizan de forma descriptiva, sin atribuir relaciones causales a las diferencias observadas.
 
-Además, se verificará en el diccionario de datos qué representa exactamente la variable `semana_gestacion` y su correspondencia con la instancia de predicción definida.
+## Preparación para el modelado
 
-## 7. Organización del repositorio
+Para la clasificación se consideran como variables predictoras:
 
-- `data/raw/`: datos originales, sin modificaciones.
-- `data/interim/`: datos intermedios durante la preparación.
-- `data/processed/`: datos preparados para el análisis y el modelado.
-- `data/external/`: datos procedentes de fuentes externas.
-- `notebooks/`: notebooks de exploración, preprocesamiento y experimentación.
-- `models/`: modelos entrenados, si corresponde almacenarlos en el repositorio.
-- `reports/figures/`: gráficos exportados.
-- `docs/`: documentación complementaria de las entregas.
-- `src/bajo_peso/`: código reutilizable del proyecto.
+- `jurisdicion_residencia_nombre`
+- `edad_madre_grupo`
+- `instruccion_madre`
+- `tipo_de_parto_nombre`
+- `semana_gestacion`
+- `Sexo`
 
-## 8. Reproducibilidad y uso de datos
+La variable `intervalo_peso_al_nacer` no se utiliza como predictor porque es la variable de la que se deriva directamente la clase objetivo. Tampoco se utiliza `nacimientos_cantidad` como predictor, ya que funciona como ponderador.
 
-Las bibliotecas y sus versiones se registrarán en `requirements.txt`. Cuando corresponda, se documentarán las semillas aleatorias y los criterios utilizados para separar los datos en conjuntos de entrenamiento y prueba.
+Las variables categóricas se transforman mediante One-Hot Encoding. El preprocesador se ajusta exclusivamente con los datos de entrenamiento y luego se aplica al conjunto de prueba, evitando utilizar información de este último durante el ajuste.
 
-Antes de publicar archivos de datos en GitHub, se verificará que las condiciones de uso de la fuente permitan redistribuirlos. No se incluirá información sensible ni archivos que no deban hacerse públicos.
+## División de los datos
 
-La descripción detallada del origen, la estructura del dataset y las transformaciones realizadas se encuentra en [`docs/entrega_2_dataset_preprocesamiento.md`](docs/entrega_2_dataset_preprocesamiento.md).
+Se utiliza una división temporal para evaluar el comportamiento de los modelos sobre años posteriores a los utilizados para entrenarlos:
+
+| Conjunto | Período |
+|---|---|
+| Entrenamiento | 2005–2018 |
+| Prueba | 2019–2022 |
+
+Esta separación permite reservar los registros de 2019–2022 para la evaluación final.
+
+## Modelos previstos
+
+Se propone comparar los siguientes algoritmos de clasificación:
+
+- Regresión Logística.
+- Árbol de Decisión.
+- Random Forest.
+
+La comparación se realizará utilizando métricas de clasificación adecuadas y teniendo en cuenta la cantidad de nacimientos representada por cada registro.
+
+## Alcance y limitaciones
+
+El proyecto analiza registros de nacimientos y no información individual recopilada durante controles prenatales. Algunas variables, como las semanas de gestación, se conocen al momento del nacimiento y no necesariamente están disponibles antes de este.
+
+Por este motivo, los resultados corresponden a una clasificación retrospectiva de registros y no deben interpretarse como una herramienta de alerta o predicción prenatal.
+
+Además, los registros representan grupos de nacimientos y no necesariamente nacimientos individuales. Por esta razón, se utiliza `nacimientos_cantidad` para considerar la cantidad de nacimientos representada por cada fila.
+
+## Tecnologías utilizadas
+
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Scikit-learn
+- Jupyter Notebook
+
+## Organización del trabajo
+
+El proyecto se desarrolla en dos etapas principales:
+
+1. **Análisis exploratorio y preprocesamiento:** inspección, limpieza, análisis descriptivo, selección de variables, división temporal y transformación de los datos.
+2. **Modelado y evaluación:** entrenamiento, comparación y evaluación de los modelos de clasificación.
