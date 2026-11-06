@@ -59,6 +59,8 @@ La variable quedó conformada por tres categorías:
 - `2`: Mujer.
 - `9`: Sin especificar.
 
+Como consecuencia de esta normalización, se pierde la distinción original entre las categorías `indeterminado` y `desconocido`.
+
 ### 2.4. Normalización del tipo de parto
 
 Se revisó la variable `tipo_de_parto_nombre`, que identifica si el nacimiento corresponde a un parto simple o múltiple.
@@ -77,13 +79,17 @@ Se inspeccionaron las categorías de las variables de edad materna, instrucción
 
 Se verificó que sus categorías fueran consistentes con las definiciones del diccionario y se conservaron las categorías sin información cuando correspondía, sin reemplazarlas por valores inventados.
 
-### 2.6. Validación de la cantidad de nacimientos
+### 2.6. Validación de la cantidad de nacimientos y agregación de registros
 
 Se verificó la variable `nacimientos_cantidad`, que representa la cantidad de nacimientos correspondiente a cada registro.
 
-Esta variable resulta importante porque el dataset no contiene una fila por cada nacimiento individual, sino registros agrupados. Por lo tanto, se utiliza como ponderador en los análisis descriptivos y en las evaluaciones que correspondan.
+Esta variable resulta importante porque el dataset no contiene una fila por cada nacimiento individual, sino registros agrupados. Por lo tanto, se utiliza como ponderador en los análisis descriptivos y en las evaluaciones del modelo.
 
-No se incorpora como variable predictora del modelo.
+No se incorpora como variable predictora.
+
+Luego de normalizar las categorías de sexo, se realizó una nueva agregación de las combinaciones que pasaron a representar la misma categoría. De esta manera, se consolidaron los registros correspondientes a combinaciones duplicadas.
+
+Como resultado, el conjunto quedó conformado por **520.422 registros**, manteniendo los **12.311.460 nacimientos** representados.
 
 ## 3. Análisis exploratorio de datos
 
@@ -110,7 +116,7 @@ Los resultados fueron:
 | Bajo peso | 897.916 | 7,29 % |
 | **Total** | **12.311.460** | **100 %** |
 
-Se observa que la proporción de nacimientos con bajo peso es considerablemente menor que la correspondiente a los nacimientos sin bajo peso. Esta diferencia deberá tenerse en cuenta durante la evaluación de los modelos de clasificación.
+Se observa que la proporción de nacimientos con bajo peso es considerablemente menor que la correspondiente a los nacimientos sin bajo peso. Esta diferencia se tuvo en cuenta durante el desarrollo y la evaluación del modelo de clasificación.
 
 ### 3.3. Evolución anual del bajo peso al nacer
 
@@ -193,11 +199,13 @@ Se realizó una división temporal del conjunto de datos:
 
 | Conjunto | Período | Registros |
 |---|---|---:|
-| Entrenamiento | 2005–2018 | 419.809 |
-| Prueba | 2019–2022 | 100.722 |
-| **Total** | **2005–2022** | **520.531** |
+| Entrenamiento | 2005–2018 | 419.765 |
+| Prueba | 2019–2022 | 100.657 |
+| **Total** | **2005–2022** | **520.422** |
 
-Esta separación permite utilizar los años más recientes como conjunto de prueba y reservarlos para la evaluación final de los modelos.
+Esta separación permite utilizar los años más recientes como conjunto de prueba y reservarlos para la evaluación final del modelo.
+
+No existe superposición de años entre ambos conjuntos.
 
 ### 4.3. Separación de predictores, objetivo y ponderadores
 
@@ -217,7 +225,7 @@ Las seis variables predictoras seleccionadas son categóricas. Se identificaron 
 
 Se configuró un procedimiento de transformación mediante One-Hot Encoding, utilizando `OneHotEncoder` y `ColumnTransformer` de Scikit-learn.
 
-Esta transformación permite representar las categorías mediante columnas binarias, de manera que puedan ser utilizadas por los algoritmos de clasificación seleccionados.
+Esta transformación permite representar las categorías mediante columnas binarias, de manera que puedan ser utilizadas por los algoritmos de clasificación.
 
 Se estableció `handle_unknown="ignore"` para permitir el procesamiento de categorías que pudieran aparecer en el conjunto de prueba y que no hayan sido observadas durante el entrenamiento.
 
@@ -229,8 +237,8 @@ Como resultado, se generaron 57 columnas transformadas para ambos conjuntos:
 
 | Conjunto | Registros | Variables transformadas |
 |---|---:|---:|
-| Entrenamiento | 419.809 | 57 |
-| Prueba | 100.722 | 57 |
+| Entrenamiento | 419.765 | 57 |
+| Prueba | 100.657 | 57 |
 
 Este procedimiento evita que la información del conjunto de prueba intervenga en el ajuste de las transformaciones.
 
@@ -244,7 +252,7 @@ Se comprobó que el preprocesamiento generara 57 columnas y que ambos conjuntos 
 
 Se verificó que las variables predictoras transformadas, las variables objetivo y los ponderadores tuvieran la misma cantidad de registros.
 
-El conjunto de entrenamiento contiene 419.809 registros en cada componente, mientras que el conjunto de prueba contiene 100.722.
+El conjunto de entrenamiento contiene 419.765 registros en cada componente, mientras que el conjunto de prueba contiene 100.657.
 
 Esta comprobación permite confirmar que se mantiene la correspondencia entre las variables predictoras, la clase objetivo y la cantidad de nacimientos representada por cada registro.
 
@@ -252,12 +260,19 @@ Esta comprobación permite confirmar que se mantiene la correspondencia entre la
 
 Finalmente, los conjuntos transformados, las variables objetivo y los ponderadores se exportaron en archivos CSV agrupados dentro de un archivo ZIP.
 
-Este archivo permite reutilizar los datos preparados en la siguiente etapa del proyecto, dedicada al entrenamiento y comparación de los modelos de clasificación.
+También se guardó el preprocesador ajustado para reutilizarlo en la siguiente etapa del proyecto, dedicada al entrenamiento y evaluación del modelo de clasificación.
+
+Los archivos generados son:
+
+- `datos_intermedios_modelado.zip`: contiene los conjuntos de entrenamiento y prueba, sus respectivas variables objetivo, ponderadores y años.
+- `preprocesador.joblib`: contiene el preprocesador ajustado con los datos de entrenamiento.
+
+Estos archivos permiten reutilizar las transformaciones realizadas sin volver a ajustarlas sobre el conjunto de prueba.
 
 ## 5. Consideraciones finales
 
 El análisis exploratorio permitió describir la distribución del bajo peso al nacer y observar diferencias entre las categorías de las variables disponibles.
 
-La preparación de los datos permitió construir la variable objetivo, normalizar las categorías, seleccionar las variables predictoras y generar los conjuntos de entrenamiento y prueba mediante una separación temporal.
+La preparación de los datos permitió construir la variable objetivo, normalizar las categorías, consolidar registros duplicados, seleccionar las variables predictoras y generar los conjuntos de entrenamiento y prueba mediante una separación temporal.
 
-El resultado de esta etapa es un conjunto de datos preparado para comparar distintos algoritmos de clasificación, manteniendo la separación entre los datos utilizados para el entrenamiento y aquellos reservados para la evaluación final.
+El resultado de esta etapa es un conjunto de datos preparado para el entrenamiento y la evaluación del modelo de clasificación, manteniendo la separación entre los datos utilizados para el entrenamiento y aquellos reservados para la evaluación final.
